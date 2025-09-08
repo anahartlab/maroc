@@ -9,7 +9,7 @@ if not os.path.isfile(placeholder_path):
 
 # === Параметры ===
 csv_path = "marocgoods.csv"
-html_path = "instock.html"
+html_path = "maroc.html"
 images_dir = "images"
 valid_exts = {".jpg", ".jpeg", ".png"}
 
