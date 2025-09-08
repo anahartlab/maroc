@@ -1,5 +1,6 @@
 import os
 import csv
+import re
 
 # === Проверка наличия placeholder.jpg ===
 placeholder_path = os.path.join("images", "placeholder.jpg")
@@ -21,7 +22,10 @@ if not os.path.exists(html_path):
 with open(html_path, "r", encoding="utf-8") as f:
     html_content = f.read()
 
+# Удаление всех старых товаров
+html_content = re.sub(r'<section class="u-clearfix u-section-16".*?</section>', '', html_content, flags=re.DOTALL)
 insert_index = html_content.lower().find("<footer")
+
 if insert_index == -1:
     print("❌ Не найден <footer> в WEAR.html")
     exit()
@@ -86,16 +90,6 @@ with open(csv_path, newline="", encoding="utf-8") as csvfile:
         if not images:
             print(f"⚠️  Пропущен '{name}' — нет изображений.")
             continue
-
-        # Удаление существующего блока по id="{name}"
-        start_tag = f'<section class="u-clearfix u-section-16" id="{name}">'
-        end_tag = '</section>'
-        start_pos = html_content.find(start_tag)
-        if start_pos != -1:
-            end_pos = html_content.find(end_tag, start_pos)
-            if end_pos != -1:
-                html_content = html_content[:start_pos] + html_content[end_pos + len(end_tag):]
-                insert_index = html_content.lower().find("<footer")
 
         carousel_id = f"carousel-{name[:8]}"
         carousel_indicators = ""
