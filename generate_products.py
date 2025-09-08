@@ -16,12 +16,13 @@ if not os.path.exists(html_path):
 # === Читаем текущий HTML ===
 with open(html_path, "r", encoding="utf-8") as f:
     html_content = f.read()
+
 # Полностью удаляем всё содержимое между </header> и <footer>
 html_content = re.sub(r'(?s)(?<=</header>).*?(?=<footer)', '', html_content)
 
 insert_index = html_content.lower().find("<footer")
 if insert_index == -1:
-    print("❌ Не найден <footer> в WEAR.html")
+    print("❌ Не найден <footer> в maroc.html")
     exit()
 
 # === Читаем CSV ===
@@ -39,8 +40,7 @@ with open(csv_path, newline="", encoding="utf-8") as csvfile:
             print(f"⚠️  Пропущен '{name}' — папка '{folder_path}' не найдена.")
             continue
 
-        images = [f for f in sorted(os.listdir(folder_path))
-                  if os.path.isfile(os.path.join(folder_path, f)) and os.path.splitext(f)[1].lower() in valid_exts]
+        images = [f for f in sorted(os.listdir(folder_path)) if os.path.splitext(f)[1].lower() in valid_exts]
         if not images:
             print(f"⚠️  Пропущен '{name}' — нет изображений.")
             continue
@@ -54,8 +54,8 @@ with open(csv_path, newline="", encoding="utf-8") as csvfile:
             if end_pos != -1:
                 html_content = html_content[:start_pos] + html_content[end_pos + len(end_tag):]
                 insert_index = html_content.lower().find("<footer")
-        # Уникальный id для карусели
-        carousel_id = f"carousel-{name}"
+
+        carousel_id = f"carousel-{name[:8]}"
         carousel_indicators = ""
         carousel_items = ""
 
