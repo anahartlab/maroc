@@ -1,30 +1,42 @@
 import csv
 import re
+import os
 
 # Загружаем HTML
 with open("maroc.html", "r", encoding="utf-8") as f:
     html_content = f.read()
 
-# Полностью удаляем всё содержимое между </header> и <footer>
-html_content = re.sub(r'(?s)(?<=</header>).*?(?=<footer)', '', html_content)
+# Шаг очистки старого контента: полностью удаляем всё содержимое между </header> и <footer>
+html_content = re.sub(r"(?s)(?<=</header>).*?(?=<footer)", "", html_content)
 
 # Читаем CSV с товарами (marocgoods.csv)
-with open("marocgoods.csv", newline='', encoding="utf-8") as csvfile:
-    reader = csv.DictReader(csvfile)
+with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
+    reader = csv.DictReader(csvfile, delimiter=';')
+    reader.fieldnames = [h.strip() for h in reader.fieldnames]
     products_html = ""
     for row in reader:
+        row = {k.strip(): v for k, v in row.items()}
         name = row["Name"].strip()
         title = row["Title"].strip()
         description = row["Description"].strip()
-        price = row["Price"].strip()
-        availability = row["Stock"].strip()
-        images_field = row.get("Images") or row.get("images") or ""
-        images = [img.strip() for img in images_field.split(";") if img.strip()]
 
         # SEO данные
         seo_title = row.get("seo_title", title).strip()
         seo_description = row.get("seo_description", description[:160]).strip()
         seo_keywords = row.get("seo_keywords", title).strip()
+
+        # Получаем список изображений из папки images/{name}/
+        images_dir = os.path.join("images", name)
+        try:
+            images = sorted(
+                [
+                    f
+                    for f in os.listdir(images_dir)
+                    if os.path.isfile(os.path.join(images_dir, f))
+                ]
+            )
+        except FileNotFoundError:
+            images = []
 
         # Уникальный id для карусели
         carousel_id = f"carousel-{name}"
@@ -37,14 +49,14 @@ with open("marocgoods.csv", newline='', encoding="utf-8") as csvfile:
 
         # Генерация слайдов
         slides = "\n".join(
-            f'''
+            f"""
             <div class="{"u-active " if i == 0 else ""}u-carousel-item u-gallery-item u-carousel-item-{i+1}">
               <div class="u-back-slide">
                 <img class="u-back-image u-expanded" src="images/{name}/{img}" alt="{title}" loading="lazy">
               </div>
               <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-{i+1}"></div>
             </div>
-            '''
+            """
             for i, img in enumerate(images)
         )
 
@@ -85,8 +97,6 @@ with open("marocgoods.csv", newline='', encoding="utf-8") as csvfile:
             <div class="u-container-layout">
               <h3 class="u-align-center">{title}</h3>
               <p>{description}</p>
-              <h3 class="u-align-center">{price} ₽</h3>
-              <p class="u-align-center u-text-availability">{availability}</p>
               <div class="u-align-center">
                 <a href="https://donate.stream/anahart" class="u-btn u-button-style u-palette-1-base"
                    style="border-radius: 100px;">Оплатить</a>
