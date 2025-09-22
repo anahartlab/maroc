@@ -11,7 +11,7 @@ html_content = re.sub(r"(?s)(?<=</header>).*?(?=<footer)", "", html_content)
 
 # Читаем CSV с товарами (marocgoods.csv)
 with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
-    reader = csv.DictReader(csvfile, delimiter=';')
+    reader = csv.DictReader(csvfile, delimiter=";")
     reader.fieldnames = [h.strip() for h in reader.fieldnames]
     products_html = ""
     for row in reader:
@@ -19,11 +19,8 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
         name = row["Name"].strip()
         title = row["Title"].strip()
         description = row["Description"].strip()
-
-        # SEO данные
-        seo_title = row.get("seo_title", title).strip()
-        seo_description = row.get("seo_description", description[:160]).strip()
-        seo_keywords = row.get("seo_keywords", title).strip()
+        price = row["Price"].strip()
+        stock = row["Stock"].strip()
 
         # Получаем список изображений из папки images/{name}/
         images_dir = os.path.join("images", name)
@@ -62,11 +59,6 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
 
         product_block = f"""
 <section class="u-clearfix u-section-16" id="{name}">
-  <!--
-    SEO Title: {seo_title}
-    SEO Description: {seo_description}
-    SEO Keywords: {seo_keywords}
-  -->
   <div class="u-clearfix u-sheet u-valign-middle-md u-sheet-1">
     <div class="u-layout">
       <div class="u-layout-row">
@@ -97,6 +89,8 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
             <div class="u-container-layout">
               <h3 class="u-align-center">{title}</h3>
               <p>{description}</p>
+              <h3 class="u-align-center">Цена: {price}</h3>
+              <p class="u-align-center">Наличие: {stock}</p>
               <div class="u-align-center">
                 <a href="https://donate.stream/anahart" class="u-btn u-button-style u-palette-1-base"
                    style="border-radius: 100px;">Оплатить</a>
@@ -119,4 +113,6 @@ html_content = html_content[:insert_index] + products_html + html_content[insert
 with open("maroc.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
-print("✅ Готово! Товары обновлены с SEO и уникальными id для каруселей.")
+print(
+    "✅ Готово! Товары с ценой и наличием обновлены с SEO и уникальными id для каруселей."
+)
