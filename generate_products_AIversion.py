@@ -30,13 +30,17 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
                     f
                     for f in os.listdir(images_dir)
                     if os.path.isfile(os.path.join(images_dir, f))
+                    and not f.startswith(".")
+                    and f.lower().endswith((".jpg", ".jpeg", ".png"))
                 ]
             )
         except FileNotFoundError:
             images = []
 
-        # Уникальный id для карусели
-        carousel_id = f"carousel-{name}"
+        # Уникальный id для карусели, очищаем от пробелов и спецсимволов
+        carousel_id = (
+            f"carousel-{re.sub(r'[^a-zA-Z0-9_-]', '', name.replace(' ', '-'))}"
+        )
 
         # Генерация индикаторов
         indicators = "\n".join(
@@ -47,7 +51,7 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
         # Генерация слайдов
         slides = "\n".join(
             f"""
-            <div class="{"u-active " if i == 0 else ""}u-carousel-item u-gallery-item u-carousel-item-{i+1}">
+            <div class="{'u-active ' if i == 0 else ''}u-carousel-item u-gallery-item u-carousel-item-{i+1}">
               <div class="u-back-slide">
                 <img class="u-back-image u-expanded" src="images/{name}/{img}" alt="{title}" loading="lazy">
               </div>
