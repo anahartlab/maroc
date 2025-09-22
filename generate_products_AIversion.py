@@ -22,7 +22,7 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
         price = row["Price"].strip()
         stock = row["Stock"].strip()
 
-        # Получаем список изображений из папки images/{name}/
+        # Получаем список изображений из папки images/{name}/, фильтруем по условиям
         images_dir = os.path.join("images", name)
         try:
             images = sorted(
@@ -37,29 +37,33 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
         except FileNotFoundError:
             images = []
 
-        # Уникальный id для карусели, очищаем от пробелов и спецсимволов
-        carousel_id = (
-            f"carousel-{re.sub(r'[^a-zA-Z0-9_-]', '', name.replace(' ', '-'))}"
-        )
+        # Уникальный id для карусели: только буквы/цифры/-, без пробелов и спецсимволов
+        # Убираем пробелы и спецсимволы из name
+        carousel_id = "carousel-" + re.sub(r"[^a-zA-Z0-9-]", "", name.replace(" ", ""))
 
-        # Генерация индикаторов
-        indicators = "\n".join(
-            f'<li data-u-target="#{carousel_id}" data-u-slide-to="{i}" class="{"u-active " if i == 0 else ""}u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>'
-            for i in range(len(images))
-        )
+        # Генерация индикаторов (li)
+        indicators = ""
+        for i in range(len(images)):
+            indicators += (
+                f'<li data-u-target="#{carousel_id}" data-u-slide-to="{i}"'
+                + (
+                    ' class="u-active u-grey-70 u-shape-circle"'
+                    if i == 0
+                    else ' class="u-grey-70 u-shape-circle"'
+                )
+                + ' style="width: 10px; height: 10px;"></li>\n'
+            )
+        indicators = indicators.rstrip()
 
         # Генерация слайдов
-        slides = "\n".join(
-            f"""
-            <div class="{'u-active ' if i == 0 else ''}u-carousel-item u-gallery-item u-carousel-item-{i+1}">
+        slides = ""
+        for i, img in enumerate(images):
+            slides += f"""\n            <div class="{('u-active ' if i == 0 else '')}u-carousel-item u-gallery-item u-carousel-item-{i+1}">
               <div class="u-back-slide">
                 <img class="u-back-image u-expanded" src="images/{name}/{img}" alt="{title}" loading="lazy">
               </div>
               <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-{i+1}"></div>
-            </div>
-            """
-            for i, img in enumerate(images)
-        )
+            </div>"""
 
         product_block = f"""
 <section class="u-clearfix u-section-16" id="{name}">
