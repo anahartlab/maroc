@@ -2,14 +2,14 @@ import csv
 import re
 import os
 
-# Загружаем HTML
+# Читаем исходный HTML
 with open("maroc.html", "r", encoding="utf-8") as f:
     html_content = f.read()
 
-# Шаг очистки старого контента: полностью удаляем всё содержимое между </header> и <footer>
+# Удаляем весь контент между </header> и <footer>
 html_content = re.sub(r"(?s)(?<=</header>).*?(?=<footer)", "", html_content)
 
-# Читаем CSV с товарами (marocgoods.csv)
+# Читаем CSV с товарами
 with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile, delimiter=";")
     reader.fieldnames = [h.strip() for h in reader.fieldnames]
@@ -22,7 +22,7 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
         price = row["Price"].strip()
         stock = row["Stock"].strip()
 
-        # Получаем список изображений из папки images/{name}/, фильтруем по условиям
+        # Получаем список изображений из папки images/{name}/, фильтруем по расширениям и исключаем скрытые файлы
         images_dir = os.path.join("images", name)
         try:
             images = sorted(
@@ -37,11 +37,10 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
         except FileNotFoundError:
             images = []
 
-        # Уникальный id для карусели: только буквы/цифры/-, без пробелов и спецсимволов
-        # Убираем пробелы и спецсимволы из name
+        # Формируем уникальный carousel_id, удаляя пробелы и спецсимволы из name
         carousel_id = "carousel-" + re.sub(r"[^a-zA-Z0-9-]", "", name.replace(" ", ""))
 
-        # Генерация индикаторов (li)
+        # Генерируем индикаторы <li>
         indicators = ""
         for i in range(len(images)):
             indicators += (
@@ -55,15 +54,17 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
             )
         indicators = indicators.rstrip()
 
-        # Генерация слайдов
+        # Генерируем слайды
         slides = ""
         for i, img in enumerate(images):
-            slides += f"""\n            <div class="{('u-active ' if i == 0 else '')}u-carousel-item u-gallery-item u-carousel-item-{i+1}">
-              <div class="u-back-slide">
-                <img class="u-back-image u-expanded" src="images/{name}/{img}" alt="{title}" loading="lazy">
-              </div>
-              <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-{i+1}"></div>
-            </div>"""
+            slides += (
+                f'\n            <div class="u-carousel-item u-gallery-item{" u-active" if i == 0 else ""}">'
+                f'\n              <div class="u-back-slide">'
+                f'\n                <img class="u-back-image u-expanded" src="images/{name}/{img}" alt="{title}" loading="lazy">'
+                f"\n              </div>"
+                f'\n              <div class="u-align-center u-over-slide u-shading u-valign-bottom"></div>'
+                f"\n            </div>"
+            )
 
         product_block = f"""
 <section class="u-clearfix u-section-16" id="{name}">
@@ -77,11 +78,11 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
                    data-interval="5000" data-u-ride="carousel" id="{carousel_id}">
 
                 <ol class="u-absolute-hcenter u-carousel-indicators">
-                  {indicators}
+{indicators}
                 </ol>
 
                 <div class="u-carousel-inner u-gallery-inner" role="listbox">
-                  {slides}
+{slides}
                 </div>
 
                 <a class="u-carousel-control u-carousel-control-prev u-grey-70 u-icon-circle u-opacity u-opacity-70"
@@ -113,14 +114,16 @@ with open("marocgoods.csv", newline="", encoding="utf-8") as csvfile:
 """
         products_html += product_block
 
-# Вставляем перед <footer>
-insert_index = html_content.lower().find("<footer")
-html_content = html_content[:insert_index] + products_html + html_content[insert_index:]
+# Вставляем все блоки перед <footer>
+footer_index = html_content.lower().find("<footer")
+if footer_index == -1:
+    # Если <footer> не найден, добавляем в конец
+    html_content += products_html
+else:
+    html_content = (
+        html_content[:footer_index] + products_html + html_content[footer_index:]
+    )
 
-# Сохраняем
+# Сохраняем обновлённый HTML
 with open("maroc.html", "w", encoding="utf-8") as f:
     f.write(html_content)
-
-print(
-    "✅ Готово! Товары с ценой и наличием обновлены с SEO и уникальными id для каруселей."
-)
