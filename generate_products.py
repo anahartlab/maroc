@@ -2,8 +2,8 @@ import os
 import csv
 
 # === Параметры ===
-csv_path = "tapestriesCatalog.csv"
-html_path = "instock.html"
+csv_path = "marocgoods.csv"
+html_path = "maroc.html"
 images_dir = "images"
 valid_exts = {".jpg", ".jpeg", ".png"}
 
@@ -18,13 +18,15 @@ with open(html_path, "r", encoding="utf-8") as f:
 
 insert_index = html_content.lower().find("<footer")
 if insert_index == -1:
-    print("❌ Не найден <footer> в WEAR.html")
+    print("❌ Не найден <footer> в maroc.html")
     exit()
 
 # === Читаем CSV ===
 with open(csv_path, newline="", encoding="utf-8") as csvfile:
-    reader = csv.DictReader(csvfile)
+    reader = csv.DictReader(csvfile, delimiter=';')  # используем ; как разделитель
+    reader.fieldnames = [h.strip() for h in reader.fieldnames]  # убираем пробелы из заголовков
     for row in reader:
+        row = {k.strip(): v for k, v in row.items()}  # убираем пробелы из ключей
         name = row["Name"].strip()
         title = row["Title"].strip()
         description = row["Description"].strip()
@@ -132,7 +134,7 @@ with open(csv_path, newline="", encoding="utf-8") as csvfile:
 with open(html_path, "w", encoding="utf-8") as f:
     f.write(html_content)
 
-print("✅ Все товары из CSV добавлены в instock.html")
+print("✅ Все товары из CSV добавлены в maroc.html")
 import sys
 
 # === Установка рабочей директории (если скрипт запущен не из корня репозитория) ===
