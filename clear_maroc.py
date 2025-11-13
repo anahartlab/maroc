@@ -60,6 +60,26 @@ header = soup.find("header")
 if header:
     header.insert_after(nav)
 
+    # Добавляем фиксированную кнопку "В меню" внизу справа
+    menu_btn = soup.new_tag("button", id="scroll-to-menu")
+    menu_btn.string = "В меню"
+    menu_btn["style"] = (
+        "position:fixed; bottom:20px; right:20px; padding:10px 15px; "
+        "background:#007BFF; color:#fff; border:none; border-radius:5px; cursor:pointer; "
+        "box-shadow:0 4px 6px rgba(0,0,0,0.3); z-index:999;"
+    )
+    soup.body.append(menu_btn)
+
+    # Добавляем скрипт для плавного скролла к навигации
+    script_scroll = soup.new_tag("script")
+    script_scroll.string = """
+    document.getElementById("scroll-to-menu").addEventListener("click", function() {
+        const nav = document.querySelector("nav.u-nav");
+        if(nav){ nav.scrollIntoView({behavior:'smooth'}); }
+    });
+    """
+    soup.body.append(script_scroll)
+
 # Сохраняем HTML
 with open(html_file, "w", encoding="utf-8") as f:
     f.write(str(soup))

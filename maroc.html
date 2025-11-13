@@ -2,11 +2,11 @@
 
 <html lang="ru" style="font-size: 16px;">
 <head>
-<meta property="og:title" content="Товары из Африки"/>
-<meta property="og:description" content="Марокканские кошельки и сумки, оригинальные изделия ручной работы."/>
-<meta property="og:image" content="https://anahartlab.github.io/images/ladysbag_yellow/ladysbag_yellow_5.jpeg"/>
-<meta property="og:url" content="https://anahartlab.github.io/maroc/maroc.html"/>
-<meta property="og:type" content="website"/>
+<meta content="Товары из Африки" property="og:title"/>
+<meta content="Марокканские кошельки и сумки, оригинальные изделия ручной работы." property="og:description"/>
+<meta content="https://anahartlab.github.io/images/ladysbag_yellow/ladysbag_yellow_5.jpeg" property="og:image"/>
+<meta content="https://anahartlab.github.io/maroc/maroc.html" property="og:url"/>
+<meta content="website" property="og:type"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta charset="utf-8"/>
 <meta content="Кошельки из сумки из натуральной кожи. Ручная работа. Марокко. Африка. В наличии в России." name="keywords"/>
@@ -2133,5 +2133,10 @@
 </div>
 </div>
 </footer>
-</body>
+<button id="scroll-to-menu" style="position:fixed; bottom:20px; right:20px; padding:10px 15px; background:#007BFF; color:#fff; border:none; border-radius:5px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3); z-index:999;">В меню</button><script>
+    document.getElementById("scroll-to-menu").addEventListener("click", function() {
+        const nav = document.querySelector("nav.u-nav");
+        if(nav){ nav.scrollIntoView({behavior:'smooth'}); }
+    });
+    </script></body>
 </html>
