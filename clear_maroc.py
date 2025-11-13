@@ -1,5 +1,3 @@
-
-
 from bs4 import BeautifulSoup
 
 # Путь к файлу HTML
@@ -18,9 +16,15 @@ for section in sections:
         if "0" in text or "нет" in text.lower():
             section.decompose()
 
-# 2️⃣ Создаем навигацию по оставшимся товарам
-nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled"})
+## Удаляем старую навигацию, если есть
+for old_nav in soup.find_all("nav", class_="u-nav"):
+    old_nav.decompose()
+
+# 2️⃣ Создаем новую красивую навигацию по оставшимся товарам
+nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled u-center"})
+nav['style'] = "text-align:center; margin:20px 0;"
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
+ul['style'] = "list-style:none; padding:0; display:flex; flex-wrap:wrap; justify-content:center; gap:15px;"
 for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     sec_id = section.get("id")
     # ищем заголовок внутри секции
@@ -30,6 +34,9 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     title = h3.get_text(strip=True)
     li = soup.new_tag("li")
     a = soup.new_tag("a", href=f"#{sec_id}")
+    a['style'] = "padding:5px 10px; color:#333; text-decoration:none; border-radius:5px; background-color:#f0f0f0; transition:0.3s;"
+    a['onmouseover'] = "this.style.backgroundColor='#dcdcdc'; this.style.color='#000';"
+    a['onmouseout'] = "this.style.backgroundColor='#f0f0f0'; this.style.color='#333';"
     a.string = title
     li.append(a)
     ul.append(li)
