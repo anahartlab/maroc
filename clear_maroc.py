@@ -22,9 +22,11 @@ for old_nav in soup.find_all("nav", class_="u-nav"):
 
 # 2️⃣ Создаем новую красивую навигацию по оставшимся товарам
 nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled u-center"})
-nav['style'] = "text-align:center; margin:20px 0;"
+nav["style"] = "text-align:center; margin:20px 0;"
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
-ul['style'] = "list-style:none; padding:0; display:flex; flex-wrap:wrap; justify-content:center; gap:15px;"
+ul["style"] = (
+    "list-style:none; padding:0; display:flex; flex-wrap:wrap; justify-content:center; gap:15px;"
+)
 for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     sec_id = section.get("id")
     # ищем заголовок внутри секции
@@ -34,9 +36,11 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     title = h3.get_text(strip=True)
     li = soup.new_tag("li")
     a = soup.new_tag("a", href=f"#{sec_id}")
-    a['style'] = "padding:5px 10px; color:#333; text-decoration:none; border-radius:5px; background-color:#f0f0f0; transition:0.3s;"
-    a['onmouseover'] = "this.style.backgroundColor='#dcdcdc'; this.style.color='#000';"
-    a['onmouseout'] = "this.style.backgroundColor='#f0f0f0'; this.style.color='#333';"
+    a["style"] = (
+        "padding:5px 10px; color:#333; text-decoration:none; border-radius:5px; background-color:#f0f0f0; transition:0.3s;"
+    )
+    a["onmouseover"] = "this.style.backgroundColor='#dcdcdc'; this.style.color='#000';"
+    a["onmouseout"] = "this.style.backgroundColor='#f0f0f0'; this.style.color='#333';"
     a.string = title
     li.append(a)
     ul.append(li)
@@ -45,7 +49,39 @@ nav.append(ul)
 # Вставляем навигацию после header
 header = soup.find("header")
 if header:
-    header.insert_after(nav)
+    # Создаем контейнер для кнопки меню и навигации
+    menu_container = soup.new_tag("div", **{"id": "menu-container"})
+    # Кнопка для сворачивания/разворачивания
+    toggle_btn = soup.new_tag("button", **{"id": "menu-toggle"})
+    toggle_btn.string = "Меню"
+    toggle_btn["style"] = (
+        "padding:8px 15px; margin:10px; cursor:pointer; border-radius:5px;"
+    )
+    menu_container.append(toggle_btn)
+    menu_container.append(nav)
+    header.insert_after(menu_container)
+
+    # Добавляем кнопку "Назад"
+    back_btn = soup.new_tag("button", **{"id": "back-to-menu"})
+    back_btn.string = "Назад"
+    back_btn["style"] = (
+        "position:fixed; bottom:20px; right:20px; padding:10px 15px; background:#333; color:#fff; border:none; border-radius:5px; cursor:pointer; z-index:999;"
+    )
+    soup.body.append(back_btn)
+
+    # Добавляем скрипт для сворачивания и кнопки "Назад"
+    script = soup.new_tag("script")
+    script.string = """
+    document.getElementById("menu-toggle").addEventListener("click", function() {
+        const nav = document.querySelector("#menu-container nav");
+        if (nav.style.display === "none") { nav.style.display = "block"; }
+        else { nav.style.display = "none"; }
+    });
+    document.getElementById("back-to-menu").addEventListener("click", function() {
+        document.getElementById("menu-container").scrollIntoView({behavior:"smooth"});
+    });
+    """
+    soup.body.append(script)
 
 # Сохраняем HTML
 with open(html_file, "w", encoding="utf-8") as f:
