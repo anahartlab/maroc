@@ -23,7 +23,7 @@ if insert_index == -1:
 
 # === Читаем CSV ===
 with open(csv_path, newline="", encoding="utf-8") as csvfile:
-    reader = csv.DictReader(csvfile, delimiter=';')  # используем ; как разделитель
+    reader = csv.DictReader(csvfile, delimiter=',')  # используем ; как разделитель
     reader.fieldnames = [h.strip() for h in reader.fieldnames]  # убираем пробелы из заголовков
     for row in reader:
         row = {k.strip(): v for k, v in row.items()}  # убираем пробелы из ключей
