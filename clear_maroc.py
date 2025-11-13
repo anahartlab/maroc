@@ -49,14 +49,6 @@ nav.append(ul)
 # Вставляем навигацию после header
 header = soup.find("header")
 if header:
-    # Удаляем старые кнопки, если есть
-    old_toggle = soup.find(id="menu-toggle")
-    if old_toggle:
-        old_toggle.decompose()
-    old_back = soup.find(id="back-to-menu")
-    if old_back:
-        old_back.decompose()
-
     # Создаем контейнер для кнопки меню и навигации
     menu_container = soup.new_tag("div", **{"id": "menu-container"})
     # Кнопка для сворачивания/разворачивания
