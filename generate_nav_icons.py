@@ -17,8 +17,15 @@ for old_nav in soup.find_all("nav", class_="u-nav"):
 # Создаем nav с иконками
 nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled u-center"})
 nav["style"] = "text-align:center; margin:20px 0;"
+
+container = soup.new_tag("div")
+container["style"] = "display:grid; grid-template-columns:1fr 1fr 1fr 1fr; width:100%;"
+nav.append(container)
+
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
-ul["style"] = "list-style:none; padding:0; margin:0 auto; display:grid; grid-template-columns: 1fr 1fr; gap:25px; max-width:700px; justify-items:center;"
+ul["style"] = "list-style:none; padding:0; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:25px; max-width:900px; justify-items:center; grid-column:2 / span 2;"
+container.append(ul)
+
 li_style = "display:flex; align-items:center; gap:12px; padding:10px 15px; box-sizing:border-box; justify-content:flex-start; width:100%;"
 
 for section in soup.find_all("section", class_="u-clearfix u-section-16"):
