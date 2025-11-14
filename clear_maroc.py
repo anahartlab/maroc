@@ -16,9 +16,12 @@ for section in sections:
         if "0" in text or "нет" in text.lower():
             section.decompose()
 
-## Удаляем старые меню, кнопки и контейнеры, если есть
+## Удаляем старые меню, кнопку "В меню" и контейнеры, если есть
 for old_nav in soup.find_all("nav", class_="u-nav"):
     old_nav.decompose()
+old_menu_btn = soup.find(id="scroll-to-menu")
+if old_menu_btn:
+    old_menu_btn.decompose()
 old_toggle = soup.find(id="menu-toggle")
 if old_toggle:
     old_toggle.decompose()
