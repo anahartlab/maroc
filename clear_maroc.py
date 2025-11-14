@@ -34,10 +34,12 @@ if old_container:
 
 # 2️⃣ Создаем новую красивую навигацию по оставшимся товарам
 nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled u-center"})
-nav["style"] = "text-align:center; margin:20px 0;"
+nav["style"] = "margin:20px 0; display:grid; justify-content:center;"
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
 ul["style"] = (
-    "list-style:none; padding:0; display:flex; flex-wrap:wrap; justify-content:center; gap:15px;"
+    "list-style:none; padding:0; margin:0 auto; "
+    "display:grid; grid-template-columns: 350px 350px; gap:20px 40px; "
+    "justify-content:center; width:100%; max-width:800px;"
 )
 for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     sec_id = section.get("id")
@@ -47,12 +49,14 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
         continue
     title = h3.get_text(strip=True)
     li = soup.new_tag("li")
+    li["style"] = (
+        "display:flex; align-items:center; gap:8px; padding:10px 15px; "
+        "box-sizing:border-box; justify-content:flex-start; width:100%; text-align:left;"
+    )
     a = soup.new_tag("a", href=f"#{sec_id}")
     a["style"] = (
-        "padding:5px 10px; color:#333; text-decoration:none; border-radius:5px; background-color:#f0f0f0; transition:0.3s;"
+        "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; text-align:left;"
     )
-    a["onmouseover"] = "this.style.backgroundColor='#dcdcdc'; this.style.color='#000';"
-    a["onmouseout"] = "this.style.backgroundColor='#f0f0f0'; this.style.color='#333';"
     a.string = title
     li.append(a)
     ul.append(li)

@@ -16,15 +16,15 @@ for old_nav in soup.find_all("nav", class_="u-nav"):
 
 # Создаем nav с иконками
 nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled u-center"})
-nav["style"] = "text-align:center; margin:20px 0;"
-
-container = soup.new_tag("div")
-container["style"] = "display:grid; grid-template-columns:1fr 1fr 1fr 1fr; width:100%;"
-nav.append(container)
+nav["style"] = "margin:20px 0; display:grid; justify-content:center;"
 
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
-ul["style"] = "list-style:none; padding:0; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:25px; max-width:700px; justify-content:center; justify-items:flex-start; grid-column:2 / span 2;"
-container.append(ul)
+ul["style"] = (
+    "list-style:none; padding:0; margin:0 auto; "
+    "display:grid; grid-template-columns:350px 350px; "
+    "gap:20px 40px; max-width:800px; justify-content:center; justify-items:flex-start;"
+)
+nav.append(ul)
 
 li_style = "display:flex; align-items:center; gap:12px; padding:10px 15px; box-sizing:border-box; justify-content:flex-start; width:100%; text-align:left;"
 
@@ -53,7 +53,7 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     li = soup.new_tag("li")
     li["style"] = li_style
     a = soup.new_tag("a", href=f"#{sec_id}")
-    a["style"] = "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; text-align:left;"
+    a["style"] = "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; text-align:left; margin-left:8px;"
     if icon_src:
         img = soup.new_tag("img", src=icon_src)
         img["style"] = "width:50px; height:50px; object-fit:cover; border-radius:5px; margin-right:8px;"
@@ -63,7 +63,6 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     a.append(span)
     li.append(a)
     ul.append(li)
-nav.append(ul)
 
 header = soup.find("header")
 if header:
