@@ -23,10 +23,10 @@ container["style"] = "display:grid; grid-template-columns:1fr 1fr 1fr 1fr; width
 nav.append(container)
 
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
-ul["style"] = "list-style:none; padding:0; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:25px; max-width:900px; justify-items:center; grid-column:2 / span 2;"
+ul["style"] = "list-style:none; padding:0; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:25px; max-width:700px; justify-content:center; justify-items:flex-start; grid-column:2 / span 2;"
 container.append(ul)
 
-li_style = "display:flex; align-items:center; gap:12px; padding:10px 15px; box-sizing:border-box; justify-content:flex-start; width:100%;"
+li_style = "display:flex; align-items:center; gap:12px; padding:10px 15px; box-sizing:border-box; justify-content:flex-start; width:100%; text-align:left;"
 
 for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     sec_id = section.get("id")
@@ -53,10 +53,10 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     li = soup.new_tag("li")
     li["style"] = li_style
     a = soup.new_tag("a", href=f"#{sec_id}")
-    a["style"] = "display:flex; align-items:center; text-decoration:none; color:#333; width:100%;"
+    a["style"] = "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; text-align:left;"
     if icon_src:
         img = soup.new_tag("img", src=icon_src)
-        img["style"] = "width:50px; height:50px; object-fit:cover; border-radius:5px;"
+        img["style"] = "width:50px; height:50px; object-fit:cover; border-radius:5px; margin-right:8px;"
         a.append(img)
     span = soup.new_tag("span")
     span.string = title
