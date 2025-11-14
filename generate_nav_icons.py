@@ -51,9 +51,14 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
                     break
 
     li = soup.new_tag("li")
-    li["style"] = li_style
+    li["style"] = (
+        li_style + " background-color:#f9f9f9; border-radius:8px; transition:0.3s;"
+    )
     a = soup.new_tag("a", href=f"#{sec_id}")
-    a["style"] = "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; text-align:left; margin-left:8px;"
+    a["style"] = (
+        "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; "
+        "text-align:left; margin-left:8px; transition:0.3s;"
+    )
     if icon_src:
         img = soup.new_tag("img", src=icon_src)
         img["style"] = "width:50px; height:50px; object-fit:cover; border-radius:5px; margin-right:8px;"
@@ -74,6 +79,8 @@ style_tag.string = (
     "@media (max-width: 600px) {"
     " nav.u-nav ul { grid-template-columns: 1fr !important; max-width: 100% !important; }"
     "}"
+    "nav.u-nav ul li:hover { background-color: #e0e0e0; }"
+    "nav.u-nav ul li:hover a { color: #222; }"
 )
 soup.head.append(style_tag) if soup.head else soup.insert(0, style_tag)
 
