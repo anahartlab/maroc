@@ -18,14 +18,8 @@ for old_nav in soup.find_all("nav", class_="u-nav"):
 nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled u-center"})
 nav["style"] = "text-align:center; margin:20px 0;"
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
-ul["style"] = (
-    "list-style:none; padding:0; margin:0 auto; "
-    "display:grid; grid-template-columns: 1fr 1fr; gap:15px; max-width:400px;"
-)
-li_style = (
-    "display:flex; align-items:center; gap:10px; "
-    "padding:5px 10px; box-sizing:border-box;"
-)
+ul["style"] = "list-style:none; padding:0; margin:0 auto; display:grid; grid-template-columns: 1fr 1fr; gap:25px; max-width:700px; justify-items:center;"
+li_style = "display:flex; align-items:center; gap:12px; padding:10px 15px; box-sizing:border-box; justify-content:flex-start; width:100%;"
 
 for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     sec_id = section.get("id")
