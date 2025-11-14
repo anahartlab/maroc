@@ -10,7 +10,7 @@ images_root = "/Users/anahart/GitHub/maroc-1/images/"
 with open(html_file, "r", encoding="utf-8") as f:
     soup = BeautifulSoup(f, "html.parser")
 
-# Удаляем старые nav
+## Удаляем старые nav и все иконки внутри
 for old_nav in soup.find_all("nav", class_="u-nav"):
     old_nav.decompose()
 
@@ -18,7 +18,14 @@ for old_nav in soup.find_all("nav", class_="u-nav"):
 nav = soup.new_tag("nav", **{"class": "u-nav u-unstyled u-center"})
 nav["style"] = "text-align:center; margin:20px 0;"
 ul = soup.new_tag("ul", **{"class": "u-unstyled"})
-ul["style"] = "list-style:none; padding:0; display:flex; flex-wrap:wrap; justify-content:center; gap:15px;"
+ul["style"] = (
+    "list-style:none; padding:0; margin:0 auto; "
+    "display:grid; grid-template-columns: 1fr 1fr; gap:15px; max-width:400px;"
+)
+li_style = (
+    "display:flex; align-items:center; gap:10px; "
+    "padding:5px 10px; box-sizing:border-box;"
+)
 
 for section in soup.find_all("section", class_="u-clearfix u-section-16"):
     sec_id = section.get("id")
@@ -36,15 +43,23 @@ for section in soup.find_all("section", class_="u-clearfix u-section-16"):
             if file_name.lower().startswith("main") and file_name.lower().endswith((".jpg", ".jpeg", ".png")):
                 icon_src = f"images/{folder_name}/{file_name}"
                 break
+        if not icon_src:
+            for file_name in os.listdir(folder_path):
+                if file_name.lower().endswith((".jpg", ".jpeg", ".png")):
+                    icon_src = f"images/{folder_name}/{file_name}"
+                    break
 
     li = soup.new_tag("li")
+    li["style"] = li_style
     a = soup.new_tag("a", href=f"#{sec_id}")
-    a["style"] = "display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#333;"
+    a["style"] = "display:flex; align-items:center; text-decoration:none; color:#333; width:100%;"
     if icon_src:
         img = soup.new_tag("img", src=icon_src)
-        img["style"] = "width:50px; height:50px; object-fit:cover; margin-bottom:5px; border-radius:5px;"
+        img["style"] = "width:50px; height:50px; object-fit:cover; border-radius:5px;"
         a.append(img)
-    a.append(title)
+    span = soup.new_tag("span")
+    span.string = title
+    a.append(span)
     li.append(a)
     ul.append(li)
 nav.append(ul)
@@ -52,6 +67,15 @@ nav.append(ul)
 header = soup.find("header")
 if header:
     header.insert_after(nav)
+
+# Добавляем адаптивный стиль для мобильных устройств
+style_tag = soup.new_tag("style")
+style_tag.string = (
+    "@media (max-width: 600px) {"
+    " nav.u-nav ul { grid-template-columns: 1fr !important; max-width: 100% !important; }"
+    "}"
+)
+soup.head.append(style_tag) if soup.head else soup.insert(0, style_tag)
 
 # Сохраняем HTML
 with open(html_file, "w", encoding="utf-8") as f:
