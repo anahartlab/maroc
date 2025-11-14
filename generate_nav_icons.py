@@ -73,14 +73,14 @@ header = soup.find("header")
 if header:
     header.insert_after(nav)
 
-# Добавляем адаптивный стиль для мобильных устройств
 style_tag = soup.new_tag("style")
 style_tag.string = (
-    "@media (max-width: 600px) {"
-    " nav.u-nav ul { grid-template-columns: 1fr !important; max-width: 100% !important; }"
-    "}"
+    "nav.u-nav ul li { transition: background-color 0.3s, color 0.3s; }"
     "nav.u-nav ul li:hover { background-color: #e0e0e0; }"
     "nav.u-nav ul li:hover a { color: #222; }"
+    "@media (max-width: 600px) {"
+    "  nav.u-nav ul { grid-template-columns: 1fr !important; max-width: 100% !important; }"
+    "}"
 )
 soup.head.append(style_tag) if soup.head else soup.insert(0, style_tag)
 
