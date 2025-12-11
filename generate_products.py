@@ -2,8 +2,8 @@ import os
 import csv
 
 # === Параметры ===
-csv_path = "marocgoods.csv"
-html_path = "maroc.html"
+csv_path = "maroc_wallet_02.csv"
+html_path = "maroc_wallet_02.html"
 images_dir = "images"
 valid_exts = {".jpg", ".jpeg", ".png"}
 
