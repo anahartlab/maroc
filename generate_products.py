@@ -2,8 +2,8 @@ import os
 import csv
 
 # === Параметры ===
-csv_path = "maroc_wallet_02.csv"
-html_path = "maroc_wallet_02.html"
+csv_path = "maroc_man_03.csv"
+html_path = "maroc_man_03.html"
 images_dir = "images"
 valid_exts = {".jpg", ".jpeg", ".png"}
 
@@ -15,6 +15,13 @@ if not os.path.exists(html_path):
 # === Читаем текущий HTML ===
 with open(html_path, "r", encoding="utf-8") as f:
     html_content = f.read()
+
+# === Очистка всего между </header> и <footer> ===
+header_end = html_content.lower().find("</header>")
+footer_start = html_content.lower().find("<footer")
+if header_end != -1 and footer_start != -1 and footer_start > header_end:
+    header_end += len("</header>")
+    html_content = html_content[:header_end] + "\n\n" + html_content[footer_start:]
 
 insert_index = html_content.lower().find("<footer")
 if insert_index == -1:

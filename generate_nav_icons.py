@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import os
 
 # Путь к файлу HTML
-html_file = "/Users/anahart/GitHub/maroc-1/maroc_wallet_02.html"
+html_file = "/Users/anahart/GitHub/maroc-1/maroc_man_03.html"
 # Путь к папке с изображениями товаров
 images_root = "/Users/anahart/GitHub/maroc-1/images/"
 
