@@ -8,8 +8,8 @@ repo_root = os.path.dirname(os.path.abspath(__file__))
 os.chdir(repo_root)
 
 # === Параметры ===
-csv_path = "maroc_wallet_02.csv"
-html_path = "maroc_wallet_02.html"
+csv_path = "maroc_man_03.csv"
+html_path = "maroc_man_03.html"
 images_dir = "images"
 valid_exts = {".jpg", ".jpeg", ".png"}
 
@@ -86,13 +86,8 @@ with open(csv_path, newline="", encoding="utf-8") as csvfile:
         # Извлекаем поля CSV
         title = row.get("title", "")
         description = row.get("description", "")
-        size = row.get("size", "")
-        date = row.get("date", "")
         price = row.get("price", "")
-        material = row.get("material", "")
-        paint = row.get("paint", "")
-        type_p = row.get("type", "")
-        place = row.get("place", "")
+        stock = row.get("stock", "")
 
         seo_title = row.get("seo title", "")
         seo_description = row.get("seo description", "")
@@ -102,8 +97,7 @@ with open(csv_path, newline="", encoding="utf-8") as csvfile:
         # Формируем основной текст по шаблону
         full_description_html = (
             f"{description}<br>"
-            f"<br>Размер: {size} ({date} {place})<br>"
-            f"({material}, {paint}, {type_p})<br>"
+            f"<br>В наличии: {stock}<br>"
         )
 
         # Удаление существующего блока по id="{name}"

@@ -5,7 +5,7 @@ import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Путь к файлу HTML в той же папке
-html_file = os.path.join(current_dir, "maroc_wallet_02.html")
+html_file = os.path.join(current_dir, "maroc_man_03.html")
 
 # Путь к папке с изображениями в той же папке
 images_root = os.path.join(current_dir, "images")
