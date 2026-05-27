@@ -8,8 +8,8 @@ repo_root = os.path.dirname(os.path.abspath(__file__))
 os.chdir(repo_root)
 
 # === Параметры ===
-csv_path = "maroc_man_03.csv"
-html_path = "maroc_man_03.html"
+csv_path = "maroc_ladys_01.csv"
+html_path = "maroc_ladys_01.html"
 images_dir = "images"
 valid_exts = {".jpg", ".jpeg", ".png"}
 
