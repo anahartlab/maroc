@@ -1,14 +1,23 @@
 from bs4 import BeautifulSoup
 import os
+import csv
 
-# Определяем текущую папку скрипта
-current_dir = os.path.dirname(os.path.abspath(__file__))
+# Путь к файлу HTML
+theway = "maroc"
+# Определяем папку, в которой находится сам скрипт
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Путь к файлу HTML в той же папке
-html_file = os.path.join(current_dir, "maroc.html")
-
-# Путь к папке с изображениями в той же папке
-images_root = os.path.join(current_dir, "images")
+html_file = os.path.join(base_dir, f"{theway}.html")
+images_root = os.path.join(base_dir, "images")
+csv_file = os.path.join(base_dir, f"{theway}.csv")
+csv_map = {}
+with open(csv_file, newline="", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        name = row.get("Name", "").strip()
+        seo = row.get("SEO_url", "").strip()
+        if name and seo:
+            csv_map[name.lower()] = seo
 
 # Читаем HTML
 with open(html_file, "r", encoding="utf-8") as f:
@@ -30,67 +39,55 @@ ul["style"] = (
 )
 nav.append(ul)
 
-li_style = "display:flex; align-items:center; gap:12px; padding:10px 15px; box-sizing:border-box; justify-content:flex-start; width:100%; text-align:left;"
+li_style = "display:flex; align-items:center; gap:12px; padding:10px 15px; box-sizing:border-box; justify-content:flex-start; width:100%; text-align:left; background: rgba(255,255,255,0.5); border:1px solid rgba(0,0,0,0.1); border-radius:4px;"
 
-for section in soup.find_all("section", class_="u-clearfix u-section-16"):
-    sec_id = section.get("id")
-    h3 = section.find(["h3", "h2", "h1"])
-    if not h3:
-        continue
-    title = h3.get_text(strip=True)
+with open(csv_file, newline="", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        folder_name = row.get("Name", "").strip()
+        sec_id = row.get("SEO_url", "").strip()
+        title = row.get("Title", "").strip()
 
-    # Попытка найти главное изображение
-    folder_name = sec_id  # предполагаем, что id секции = названию папки
-    folder_path = os.path.join(images_root, folder_name)
-    icon_src = None
-    if os.path.exists(folder_path):
-        for file_name in os.listdir(folder_path):
-            if file_name.lower().startswith("main") and file_name.lower().endswith(
-                (".jpg", ".jpeg", ".png")
-            ):
-                icon_src = f"images/{folder_name}/{file_name}"
-                break
-        if not icon_src:
-            for file_name in os.listdir(folder_path):
-                if file_name.lower().endswith((".jpg", ".jpeg", ".png")):
-                    icon_src = f"images/{folder_name}/{file_name}"
-                    break
+        folder_path = os.path.join(images_root, folder_name)
+        icon_src = None
+        if os.path.exists(folder_path):
+            image_files = sorted(
+                f
+                for f in os.listdir(folder_path)
+                if f.lower().endswith((".jpg", ".jpeg", ".png"))
+            )
 
-    li = soup.new_tag("li")
-    li["style"] = (
-        li_style + " background-color:#f9f9f9; border-radius:8px; transition:0.3s;"
-    )
-    a = soup.new_tag("a", href=f"#{sec_id}")
-    a["style"] = (
-        "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; "
-        "text-align:left; margin-left:8px; transition:0.3s;"
-    )
-    if icon_src:
-        img = soup.new_tag("img", src=icon_src)
-        img["style"] = (
-            "width:50px; height:50px; object-fit:cover; border-radius:5px; margin-right:8px;"
+            if image_files:
+                selected = next(
+                    (f for f in image_files if f.lower() in ("main.jpg", "main.jpeg")),
+                    image_files[0],
+                )
+
+                icon_src = os.path.join("images", folder_name, selected).replace(
+                    "\\", "/"
+                )
+
+        li = soup.new_tag("li")
+        li["style"] = li_style
+        a = soup.new_tag("a", href=f"#{sec_id}")
+        a["style"] = (
+            "display:flex; align-items:center; text-decoration:none; color:#333; width:100%; "
+            "text-align:left; transition:0.3s;"
         )
-        a.append(img)
-    span = soup.new_tag("span")
-    span.string = title
-    a.append(span)
-    li.append(a)
-    ul.append(li)
+        if icon_src:
+            img = soup.new_tag("img", src=icon_src)
+            img["style"] = (
+                "width:50px; height:50px; object-fit:cover; border-radius:5px; margin-right:8px;"
+            )
+            a.append(img)
+        span = soup.new_tag("span")
+        span.string = title
+        a.append(span)
+        li.append(a)
+        ul.append(li)
 
 header = soup.find("header")
 if header:
-    # Удаляем все старые кнопки с id 'scroll-to-menu'
-    for old_button in soup.find_all(id="scroll-to-menu"):
-        old_button.decompose()
-
-    # Удаляем все старые скрипты, содержащие 'scroll-to-menu' или 'scrollIntoView'
-    for script_tag in soup.find_all("script"):
-        if script_tag.string and (
-            "scroll-to-menu" in script_tag.string
-            or "scrollIntoView" in script_tag.string
-        ):
-            script_tag.decompose()
-
     header.insert_after(nav)
 
     # Добавляем фиксированную кнопку "В меню" в правом нижнем углу
@@ -103,18 +100,13 @@ if header:
     )
     nav.insert_after(button)
 
+    # Добавляем скрипт для плавного скролла к навигации при нажатии на кнопку
     script = soup.new_tag("script")
-    script.string = """
-document.addEventListener('DOMContentLoaded', function() {
-    var btn = document.getElementById('scroll-to-menu');
-    var nav = document.querySelector('nav.u-nav.u-center');
-    if(btn && nav){
-        btn.addEventListener('click', function() {
-            nav.scrollIntoView({ behavior: 'smooth' });
-        });
-    }
-});
-"""
+    script.string = (
+        "document.getElementById('scroll-to-menu').addEventListener('click', function() {"
+        "  document.querySelector('nav.u-nav').scrollIntoView({ behavior: 'smooth' });"
+        "});"
+    )
     button.insert_after(script)
 
 style_tag = soup.new_tag("style")

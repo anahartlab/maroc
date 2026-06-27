@@ -25,17 +25,20 @@ with open(html_path, "r", encoding="utf-8") as f:
 # === Парсим HTML для удаления навигации ===
 soup = BeautifulSoup(html_content, "html.parser")
 
-# === Удаляем все существующие секции товаров ===
-start_tag_prefix = '<section class="u-clearfix u-section-16"'
-end_tag = "</section>"
-while True:
-    start_pos = html_content.find(start_tag_prefix)
-    if start_pos == -1:
-        break
-    end_pos = html_content.find(end_tag, start_pos)
-    if end_pos == -1:
-        break
-    html_content = html_content[:start_pos] + html_content[end_pos + len(end_tag) :]
+# === Очищаем всё содержимое между </header> и <footer> ===
+header_end = html_content.lower().find("</header>")
+footer_start = html_content.lower().find("<footer")
+
+if header_end == -1 or footer_start == -1:
+    print("❌ Не удалось найти </header> или <footer>.")
+    exit()
+
+header_end += len("</header>")
+html_content = (
+    html_content[:header_end]
+    + "\n\n"
+    + html_content[footer_start:]
+)
 
 # === Удаляем все теги <nav> с классом "u-nav" ===
 for old_nav in soup.find_all("nav", class_="u-nav"):
@@ -100,16 +103,11 @@ with open(csv_path, newline="", encoding="utf-8") as csvfile:
             f"<br>В наличии: {stock}<br>"
         )
 
-        # Удаление существующего блока по id="{name}"
-        start_tag = f'<section class="u-clearfix u-section-16" id="{name}">'
-        start_pos = html_content.find(start_tag)
-        if start_pos != -1:
-            end_pos = html_content.find(end_tag, start_pos)
-            if end_pos != -1:
-                html_content = (
-                    html_content[:start_pos] + html_content[end_pos + len(end_tag) :]
-                )
-                insert_index = html_content.lower().find("<footer")
+        # insert position is always just before <footer>
+        insert_index = html_content.lower().find("<footer")
+        if insert_index == -1:
+            print("❌ Не найден <footer> в HTML.")
+            exit()
 
         carousel_id = f"carousel-{name[:8]}"
         carousel_indicators = ""
